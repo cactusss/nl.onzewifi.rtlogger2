@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+
+<html lang="en">
+	<head>
+		<base href="/">
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1">
+		<title>Homey Account</title>
+		<link rel="stylesheet" href="./app/nl.onzewifi.rtlogger2/settings/auth.e0887b16.css">
+		<script type="text/javascript" src="/homey.js" data-origin="settings"></script>
+		<script>
+			credentials = {}
+		</script>
+	</head>
+	<body style="margin: 0px">
+		<div id="cover-spin"></div>
+		<main id="Logs" class="container view-login" style="display: none;">
+			<div>
+				<button type="button" class="button-primary" id="button_close" onclick="hideLogs();">Close</button>
+			</div>
+			<div>
+				<button type="button" class="button-primary" id="button_getlog" onclick="getLogs();">Refresh</button>
+			</div>
+			<div>
+				<button type="button" class="button-primary" id="button_deletelog" onclick="deleteLogs(); " data-i18n="log.delete">Delete</button>
+			</div>
+			</br>
+			<div>
+				<textarea id="loglines" style="overflow: hidden" type="text"></textarea>
+			</div>
+
+		</main>
+		<main id="Main" class="container view-login">
+			<div id="logo"><img class="logo" src="./app/nl.onzewifi.rtlogger2/settings/logo.db355c26.png" onclick="showLogs();"></div>
+			<div id="main">
+				<h2>WebServer / WebSocket Port Settings</h2>
+				<div template-load="login-form" class="login-form">
+					<div class="messages"></div>
+						<form name="login" novalidate="">
+						<div class="text-inputt">
+							<input id="htmlport" type="text" name="htmlport" placeholder="">
+						</div>
+						<div class="text-inputt">
+							<input id="websocketport" type="text" name="websocketport" placeholder="">
+						</div>
+						<div class="login">
+							<input id="save" type="button" class="button-primary" value="Save port settings">
+						</div>
+					</form>
+					</br>
+				</div>
+			</div>
+		</main>
+		<script type="text/javascript">
+			function onHomeyReady(Homey) {
+				Homey.ready();
+
+				var htmlport = document.getElementById('htmlport')
+				var websocketport = document.getElementById('websocketport')
+				var saveElement = document.getElementById('save')
+
+				Homey.get("htmlport", function (err, htmlport) {
+					//if (err) return Homey.alert(err);
+					document.getElementById('htmlport').value = htmlport;
+				});
+
+				Homey.get("websocketport", function (err, websocketport) {
+					//if (err) return Homey.alert(err);
+					document.getElementById('websocketport').value = websocketport;
+				});
+
+				saveElement.addEventListener("click", function (e) {
+					Homey.set("htmlport", document.getElementById('htmlport').value, function (err) {
+						if (err) return Homey.alert(err);
+						console.log('htmlport should be saved')
+					});
+					Homey.set("websocketport",  document.getElementById('websocketport').value, function (err) {
+						if (err) return Homey.alert(err);
+						console.log('websocketport should be saved')
+					});
+				});
+				document.getElementsByTagName("link")[1].remove();  
+
+			}
+
+			function getLogs() {
+				Homey.api('GET', 'getlogs/', (err, result) => {
+					if (!err) {
+						document.getElementById('loglines').innerHTML = '';
+						if (result.length === 0) {
+							document.getElementById('loglines').innerHTML = Homey.__("log.nothingyet")
+						} else {
+							for (let i = (result.length - 1); i >= 0; i -= 1) {
+								document.getElementById('loglines').innerHTML += result[i];
+							}
+						}
+					} else {
+						Homey.alert(err.message, 'error'); 
+					}
+					document.getElementById('loglines').style.height = document.getElementById('loglines').scrollHeight + 'px'
+				});
+			}
+
+			function deleteLogs() {
+				Homey.api('GET', 'deletelogs/', (err) => {
+					if (err) {
+						Homey.alert(err.message, 'error'); 
+					} else { 
+						getLogs();
+						Homey.alert('Logs deleted!', 'info');
+					}
+				});
+				document.getElementById('loglines').style.height = '35px'
+			}
+
+			function showLogs() {
+				getLogs();
+				document.getElementById('Logs').style.display = '';
+				document.getElementById('Main').style.display = 'none'; 
+			}
+
+			function hideLogs() {
+				document.getElementById('Main').style.display = ''; 
+				document.getElementById('Logs').style.display = 'none';
+			}
+		</script>
+	</body>
+</html>   

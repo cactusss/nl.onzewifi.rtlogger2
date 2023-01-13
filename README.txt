@@ -1,0 +1,1 @@
+Tap in to Homey Realtime event system. Just start your webbrowser open the page http://<Homey's IP address>:9101 and select from which modules, devices or apps you want to receive messages.

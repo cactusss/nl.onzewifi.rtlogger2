@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "fixture-stdout": "^0.2.1",
+    "ip": "^1.1.5",
+    "luxon": "^2.3.0",
+    "node-fetch": "^2.6.1",
+    "socket.io-client": "^2.4.0",
+    "ws": "^8.4.2"
+  }
+}
